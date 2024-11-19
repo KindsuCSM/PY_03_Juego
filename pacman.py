@@ -20,5 +20,5 @@ class PacMan:
             if self.rect.right > self.screen_rect.right:
                 self.rect.right = self.screen_rect.right
 
-    def dibujar(self):
+    def draw_pacman(self):
         self.screen.blit(self.image, self.rect)

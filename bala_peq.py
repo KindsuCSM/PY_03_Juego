@@ -6,7 +6,7 @@ class Bala(Sprite):
         super().__init__()
         self.screen = juego.screen
         self.color = juego.color_bala
-        self.rect = pygame.Rect(0, 0, juego.anchobala, juego.altobala)
+        self.rect = pygame.Rect(0, 0, juego.ancho_bala, juego.alto_bala)
         self.rect.midtop = juego.pacman.rect.midtop
         self.y = float(self.rect.y)
         self.velocidad = -5  # Velocidad negativa para que suba
