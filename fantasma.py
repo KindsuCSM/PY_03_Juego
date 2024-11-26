@@ -25,6 +25,7 @@ class Fantasma(Sprite):
         self.rect = self.image.get_rect()
         self.speed = 2
 
+        self.rect_top = self.rect.top
         self.rect.x = random.randint(0, self.screen.get_width() - self.rect.width)
         self.rect.y = self.speed
 

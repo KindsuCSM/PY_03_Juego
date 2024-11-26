@@ -20,5 +20,8 @@ class Bala(Sprite):
         if self.rect.bottom < 0:
             self.kill()
 
+
+
+
     def draw_bala(self):
         pygame.draw.rect(self.screen, self.color, self.rect)

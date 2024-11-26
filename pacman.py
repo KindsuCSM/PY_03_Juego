@@ -5,8 +5,10 @@ class PacMan:
     def __init__(self, game):
         self.screen = game.screen
         self.screen_rect = game.screen.get_rect()
-        self.image = pygame.image.load('Personajes/PacManAbierto.png')  # Cambia la ruta si es necesario
-        self.rect = self.image.get_rect()
+        self.image_cerrado = pygame.image.load('Personajes/PacManCerrado.png')
+        self.image_abierto = pygame.image.load('Personajes/PacManAbierto.png')
+        self.image = self.image_cerrado
+        self.rect = self.image_cerrado.get_rect()
         self.rect.midbottom = game.screen.get_rect().midbottom  # Inicializa en el centro inferior
         self.speed = 3
 
@@ -22,3 +24,10 @@ class PacMan:
 
     def draw_pacman(self):
         self.screen.blit(self.image, self.rect)
+
+    def cambiar_sprite (self, abierto = True):
+        if abierto:
+            self.image = self.image_abierto
+        else:
+            self.image = self.image_cerrado
+
