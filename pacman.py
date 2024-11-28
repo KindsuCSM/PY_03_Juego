@@ -5,8 +5,8 @@ class PacMan:
     def __init__(self, game):
         self.screen = game.screen
         self.screen_rect = game.screen.get_rect()
-        self.image_cerrado = pygame.image.load('Personajes/PacManCerrado.png')
-        self.image_abierto = pygame.image.load('Personajes/PacManAbierto.png')
+        self.image_cerrado = pygame.image.load('Imagenes/Personajes/PacManCerrado.png')
+        self.image_abierto = pygame.image.load('Imagenes/Personajes/PacManAbierto.png')
         self.image = self.image_cerrado
         self.rect = self.image_cerrado.get_rect()
         self.rect.midbottom = game.screen.get_rect().midbottom  # Inicializa en el centro inferior

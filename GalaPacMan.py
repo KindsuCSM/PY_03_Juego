@@ -6,38 +6,41 @@ from bala_peq import Bala
 from fantasma import Fantasma
 from pacman import PacMan
 
+
 class GalaPacMan:
 
-    #Clase de ajustes donde tendremos todas las variables que podemos cambiar tanto de jugador como de enemigo.
+    # Clase de ajustes donde tendremos todas las variables de jugador y enemigo
     def __init__(self):
+        # Dimensiones de pantalla
         self.screenWidth = 400
         self.screenHeight = 500
-
+        # Inicialización de pygame
         pygame.init()
-        #Creamos las variables para la pantalla
+        # Configuración de pantalla
         self.screen = pygame.display.set_mode((self.screenWidth, self.screenHeight))
         pygame.display.set_caption('GalaPacMan')
         self.color = (0, 0, 0)
 
-        #Creamos la variable del personaje principal
+        # Configuración del personaje principal
         self.pacman = PacMan(self)
-        self.healthPoint = 1
+        self.hp_pacman = 5
 
-        #Creamos las variables necesarias para las balas
+        # Configuración para las balas
         self.ancho_bala = 6
         self.alto_bala = 6
-        self.color_bala =  (250, 250, 153)
+        self.color_bala = (250, 250, 153)
         self.balas = pygame.sprite.Group()
         self.bala_espacio = False
         self.ultimo_disparo = 0
         self.retraso_disparo = 100
+        self.danio_bala = 1
 
-        #Creamos las variables necesarias para los enemigos
+        # Configuración para los enemigos
         self.fantasmas = pygame.sprite.Group()
         self.nuevo_fantasma = 0
-        self.tiempo_entre_fantasma = 3000
+        self.tiempo_entre_fantasmas = 3000
 
-        #Creamos las variables para la puntuacion del jugador
+        # Configuración de la puntuación del jugador
         self.punctuationJugador = 0
 
     def bucle_juego(self):
@@ -52,8 +55,7 @@ class GalaPacMan:
                     if event.key == pygame.K_SPACE:
                         tiempo_actual = pygame.time.get_ticks()  # Obtener el tiempo actual en milisegundos
 
-                        #Cambiar la imagen de pacman a abierto
-                        self.pacman.cambiar_sprite(abierto=True)
+                        self.pacman.cambiar_sprite(abierto=True) # Cambiar la imagen de pacman cuando dispara
 
                         # Comprobar si ha pasado el tiempo suficiente desde el último disparo
                         if tiempo_actual - self.ultimo_disparo >= self.retraso_disparo:
@@ -61,34 +63,39 @@ class GalaPacMan:
                             self.ultimo_disparo = tiempo_actual  # Actualizar el tiempo del último disparo
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_SPACE:
-                        #Cambiar la imagen de pacman a cerrado
-                        self.pacman.cambiar_sprite(abierto=False)
+                        self.pacman.cambiar_sprite(abierto=False) # Cambiar imagen si deja de disparar
             keys = pygame.key.get_pressed()
             self.pacman.mover(keys)
             self.screen.fill(self.color)
 
-            #Funcion para crear a pacman, actualizar balas y fantasmas, crear enemigos y controlar las colisiones
+            # Función para actualizar los eventos de la pantalla
             self.actualizar_pantalla()
 
             pygame.display.flip()
 
     def actualizar_pantalla(self):
-        #Funcion para dibujar a pacman en pantalla
-        self.pacman.draw_pacman()
-        #Funcion para actualizar balas y fantasmas
+
+        self.pacman.draw_pacman()  # Dibujar a PacMan en pantalla
+
+        # Actualizar posiciones de las balas y los fantasmas
         self.balas.update()
         self.fantasmas.update()
-        #Funcion para crear enemigos aleatorios
-        self.crear_enemigos()
-        #Funciones para controlar colision de enemigos y balas
+
+        self.crear_enemigos()  # Crear enemigos aleatorios con un intervalo de 2s
+
+        # Control de colision de bala-enemigo y enemigo-pantalla
         self.colision_bala()
         self.colision_fantasma()
+
+        # Dibujar balas y enemigos en la pantalla
         for bala in self.balas.sprites():
             bala.draw_bala()
         for fantasma_nuevo in self.fantasmas.sprites():
             fantasma_nuevo.draw_fantasma()
+
+        # Actualizar puntuacion y vida de PacMan
         self.punctuation()
-        self.vida_jugador()
+        self.texto_vida_jugador()
 
     def crear_bala(self):
         n_bala = Bala(self)
@@ -96,24 +103,33 @@ class GalaPacMan:
 
     def crear_enemigos(self):
         tiempo_actual = pygame.time.get_ticks()
-        if tiempo_actual - self.nuevo_fantasma >= self.tiempo_entre_fantasma:
+        if tiempo_actual - self.nuevo_fantasma >= self.tiempo_entre_fantasmas:
             n_fantasma = Fantasma(self)
+            n_fantasma2 = Fantasma(self)
             self.fantasmas.add(n_fantasma)
+            self.fantasmas.add(n_fantasma2)
             self.nuevo_fantasma = tiempo_actual
 
     def colision_bala(self):
-        colision = pygame.sprite.groupcollide(self.balas, self.fantasmas, True, True)
-        if len(colision) != 0:
-            self.punctuationJugador += 10
+        # La vida del fantasma es 1
+        # colision = pygame.sprite.groupcollide(self.balas, self.fantasmas, True, True)
+        # if len(colision) != 0:
+        # self.punctuationJugador += 10
+
+        # La vida del fantasma es 3
+        colision = pygame.sprite.groupcollide(self.balas, self.fantasmas, True, False)
+        for fantasmas in colision.values():
+            for fantasma in fantasmas:
+                if fantasma.recibir_danio(self.danio_bala):
+                    self.punctuationJugador += 10
 
     def colision_fantasma(self):
         for fantasma in self.fantasmas:
             if fantasma.rect.top >= self.screen.get_height():
                 fantasma.kill()
-                self.healthPoint -= 1
-        if self.healthPoint <= 0:
-            self.game_over()
-
+                self.hp_pacman -= 1
+        if self.hp_pacman <= 0:
+            self.texto_game_over()
 
     def punctuation(self):
         fuente = pygame.font.SysFont('Arial', 15)
@@ -122,18 +138,18 @@ class GalaPacMan:
         rect_texto.topleft = (20, 20)
         self.screen.blit(superficie_texto, rect_texto)
 
-    def vida_jugador(self):
+    def texto_vida_jugador(self):
         fuente = pygame.font.SysFont('Arial', 15)
-        superficie_texto = fuente.render("Vida: " + str(self.healthPoint), True, (255, 255, 255))
+        superficie_texto = fuente.render("Vida: " + str(self.hp_pacman), True, (255, 255, 255))
         rect_texto = superficie_texto.get_rect()
         rect_texto.topleft = (20, 40)
         self.screen.blit(superficie_texto, rect_texto)
 
-    def game_over(self):
+    def texto_game_over(self):
         fuente = pygame.font.SysFont('Arial', 30)
         superficie_texto = fuente.render("Game Over", True, (255, 255, 155))
         rect_texto = superficie_texto.get_rect()
-        rect_texto.topleft = (self.screenWidth /3.4 , self.screenHeight /2)
+        rect_texto.topleft = (self.screenWidth / 3.4, self.screenHeight / 2)
         self.screen.blit(superficie_texto, rect_texto)
         pygame.display.flip()
         pygame.time.delay(2000)
