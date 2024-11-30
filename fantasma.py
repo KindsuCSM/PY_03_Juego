@@ -1,11 +1,7 @@
-from pygame.sprite import Sprite
-
 import pygame
 import random
 import sys
-
-
-
+from pygame._sprite import Sprite
 
 def personaje_aleatorio():
     enemy_images = [

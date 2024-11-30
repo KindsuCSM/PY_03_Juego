@@ -2,6 +2,7 @@ import pygame
 import sys
 
 import fantasma
+from ItemsPowerUp import Fresita, Cereza
 from bala_peq import Bala
 from fantasma import Fantasma
 from pacman import PacMan
@@ -40,8 +41,24 @@ class GalaPacMan:
         self.nuevo_fantasma = 0
         self.tiempo_entre_fantasmas = 3000
 
-        # Configuración de la puntuación del jugador
+        # Configuración de la puntuación
         self.punctuationJugador = 0
+
+
+        # Importar imagenes de UI
+        self.corazon_lleno = pygame.image.load("Imagenes/ItemUI/CorazonLleno.png")
+        self.corazon_vacio = pygame.image.load("Imagenes/ItemUI/CorazonVacio.png")
+
+        self.power_ups_cerezas = pygame.sprite.Group()
+        self.power_ups_fresas = pygame.sprite.Group()
+
+        self.nuevo_power_up_cerezas = 0
+        self.nuevo_power_up_fresas = 0
+
+        self.tiempo_entre_fresitas = 3000
+        self.tiempo_entre_cereza = 3000
+
+
 
     def bucle_juego(self):
         clock = pygame.time.Clock()
@@ -74,14 +91,17 @@ class GalaPacMan:
             pygame.display.flip()
 
     def actualizar_pantalla(self):
-
         self.pacman.draw_pacman()  # Dibujar a PacMan en pantalla
-
-        # Actualizar posiciones de las balas y los fantasmas
+        # Actualizar posiciones
         self.balas.update()
         self.fantasmas.update()
+        self.power_ups_cerezas.update()
+        self.power_ups_fresas.update()
 
-        self.crear_enemigos()  # Crear enemigos aleatorios con un intervalo de 2s
+        #Crear enemigos y powerUps
+        self.crear_enemigos()
+        self.power_up_fresa()
+        self.power_up_cereza()
 
         # Control de colision de bala-enemigo y enemigo-pantalla
         self.colision_bala()
@@ -90,8 +110,15 @@ class GalaPacMan:
         # Dibujar balas y enemigos en la pantalla
         for bala in self.balas.sprites():
             bala.draw_bala()
+
         for fantasma_nuevo in self.fantasmas.sprites():
             fantasma_nuevo.draw_fantasma()
+
+        for power_up_cer in self.power_ups_cerezas.sprites():
+            power_up_cer.draw_cereza()
+
+        for power_up_fres in self.power_ups_fresas.sprites():
+            power_up_fres.draw_fresa()
 
         # Actualizar puntuacion y vida de PacMan
         self.punctuation()
@@ -105,10 +132,22 @@ class GalaPacMan:
         tiempo_actual = pygame.time.get_ticks()
         if tiempo_actual - self.nuevo_fantasma >= self.tiempo_entre_fantasmas:
             n_fantasma = Fantasma(self)
-            n_fantasma2 = Fantasma(self)
             self.fantasmas.add(n_fantasma)
-            self.fantasmas.add(n_fantasma2)
             self.nuevo_fantasma = tiempo_actual
+
+    def power_up_fresa(self):
+        tiempo_actual = pygame.time.get_ticks()
+        if tiempo_actual - self.nuevo_power_up_cerezas >= self.tiempo_entre_fresitas:
+            n_fresita = Fresita(self)
+            self.power_ups_fresas.add(n_fresita)
+            self.nuevo_power_up_fresas = tiempo_actual
+
+    def power_up_cereza(self):
+        tiempo_actual = pygame.time.get_ticks()
+        if tiempo_actual - self.nuevo_power_up_cerezas >= self.tiempo_entre_cereza:
+            n_cereza = Cereza(self)
+            self.power_ups_cerezas.add(n_cereza)
+            self.nuevo_power_up_cerezas = tiempo_actual
 
     def colision_bala(self):
         # La vida del fantasma es 1
@@ -135,15 +174,19 @@ class GalaPacMan:
         fuente = pygame.font.SysFont('Arial', 15)
         superficie_texto = fuente.render("Puntuacion: " + str(self.punctuationJugador), True, (255, 255, 255))
         rect_texto = superficie_texto.get_rect()
-        rect_texto.topleft = (20, 20)
+        rect_texto.topleft = (20, 50)
         self.screen.blit(superficie_texto, rect_texto)
 
     def texto_vida_jugador(self):
-        fuente = pygame.font.SysFont('Arial', 15)
-        superficie_texto = fuente.render("Vida: " + str(self.hp_pacman), True, (255, 255, 255))
-        rect_texto = superficie_texto.get_rect()
-        rect_texto.topleft = (20, 40)
-        self.screen.blit(superficie_texto, rect_texto)
+        #fuente = pygame.font.SysFont('Arial', 15)
+        #superficie_texto = fuente.render("Vida: " + str(self.hp_pacman), True, (255, 255, 255))
+        #rect_texto = superficie_texto.get_rect()
+        #rect_texto.topleft = (20, 40)
+        #self.screen.blit(superficie_texto, rect_texto)
+
+        for i in range(5):
+            if(self.hp_pacman >= (i+1)):
+                self.screen.blit(self.corazon_lleno, (5+i*25, 5))
 
     def texto_game_over(self):
         fuente = pygame.font.SysFont('Arial', 30)
