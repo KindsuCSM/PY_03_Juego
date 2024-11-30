@@ -5,10 +5,10 @@ from pygame._sprite import Sprite
 
 def personaje_aleatorio():
     enemy_images = [
-        pygame.image.load("Imagenes/Personajes/Azul.png"),
-        pygame.image.load("Imagenes/Personajes/Naranja.png"),
-        pygame.image.load("Imagenes/Personajes/Rojo.png"),
-        pygame.image.load("Imagenes/Personajes/Rosa.png"),
+        pygame.image.load("Recursos/Personajes/Azul.png"),
+        pygame.image.load("Recursos/Personajes/Naranja.png"),
+        pygame.image.load("Recursos/Personajes/Rojo.png"),
+        pygame.image.load("Recursos/Personajes/Rosa.png"),
     ]
     return random.choice(enemy_images)
 
@@ -23,7 +23,7 @@ class Fantasma(Sprite):
         self.salud = 3
 
         self.rect_top = self.rect.top
-        self.rect.x = random.randint(0, self.screen.get_width() - self.rect.width)
+        self.rect.x = random.randint(20, self.screen.get_width() - self.rect.width - 16)
         self.rect.y = self.speed
 
     def update(self):

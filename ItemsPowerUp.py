@@ -9,12 +9,12 @@ class Cereza(Sprite):
         super().__init__()
         self.screen = juego.screen
 
-        self.image = pygame.image.load("Imagenes/ItemPowerUp/Cereza.png")
+        self.image = pygame.image.load("Recursos/ItemPowerUp/Cereza.png")
         self.rect = self.image.get_rect()
         self.speed = 3
 
         self.rect_top = self.rect.top
-        self.rect.x = random.randint(0, self.screen.get_width() - self.rect.width)
+        self.rect.x = random.randint(20, self.screen.get_width() - self.rect.width - 16)
         self.rect.y = self.speed
 
     def update(self):
@@ -31,12 +31,12 @@ class Fresita(Sprite):
         super().__init__()
         self.screen = juego.screen
 
-        self.image = pygame.image.load("Imagenes/ItemPowerUp/Fresita.png")
+        self.image = pygame.image.load("Recursos/ItemPowerUp/Fresita.png")
         self.rect = self.image.get_rect()
         self.speed = 4
 
         self.rect_top = self.rect.top
-        self.rect.x = random.randint(0, self.screen.get_width() - self.rect.width)
+        self.rect.x = random.randint(20, self.screen.get_width() - self.rect.width - 16)
         self.rect.y = self.speed
 
     def update(self):

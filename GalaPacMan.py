@@ -15,16 +15,22 @@ class GalaPacMan:
         # Dimensiones de pantalla
         self.screenWidth = 400
         self.screenHeight = 500
+
+        # Fuente pacman
+        self.ruta_fuente = "Recursos/UI/retro.ttf"
+        self.color_fuente = (250, 250, 153)
+
         # Inicialización de pygame
         pygame.init()
         # Configuración de pantalla
         self.screen = pygame.display.set_mode((self.screenWidth, self.screenHeight))
         pygame.display.set_caption('GalaPacMan')
-        self.color = (0, 0, 0)
+        self.background = pygame.image.load('Recursos/UI/game_background.png')
 
         # Configuración del personaje principal
         self.pacman = PacMan(self)
-        self.hp_pacman = 5
+        self.vida_pacman = 5
+        self.energia_pacman = 4
 
         # Configuración para las balas
         self.ancho_bala = 6
@@ -35,6 +41,8 @@ class GalaPacMan:
         self.ultimo_disparo = 0
         self.retraso_disparo = 100
         self.danio_bala = 1
+        self.duracion_tiempo_powerup = 20000 #20s de powerUp
+        self.contador_tiempo_efecto = 0
 
         # Configuración para los enemigos
         self.fantasmas = pygame.sprite.Group()
@@ -42,12 +50,24 @@ class GalaPacMan:
         self.tiempo_entre_fantasmas = 3000
 
         # Configuración de la puntuación
-        self.punctuationJugador = 0
+        self.puntuacionJugador = 0
+
+        # Importar imagenes de Energia
+        self.imagenes_energia = {
+            0: pygame.image.load("Recursos/ItemEnergia/Incompleta.png"),
+            1: pygame.image.load("Recursos/ItemEnergia/Incompleta_1.png"),
+            2: pygame.image.load("Recursos/ItemEnergia/Incompleta_2.png"),
+            3: pygame.image.load("Recursos/ItemEnergia/Incompleta_3.png"),
+            4: pygame.image.load("Recursos/ItemEnergia/Incompleta_4.png"),
+            5: pygame.image.load("Recursos/ItemEnergia/Completa.png")
+        }
+        self.bool_powerup = False
+        self.power_up_activado = False
 
 
         # Importar imagenes de UI
-        self.corazon_lleno = pygame.image.load("Imagenes/ItemUI/CorazonLleno.png")
-        self.corazon_vacio = pygame.image.load("Imagenes/ItemUI/CorazonVacio.png")
+        self.corazon_lleno = pygame.image.load("Recursos/ItemVida/CorazonLleno.png")
+        self.corazon_vacio = pygame.image.load("Recursos/ItemVida/CorazonVacio.png")
 
         self.power_ups_cerezas = pygame.sprite.Group()
         self.power_ups_fresas = pygame.sprite.Group()
@@ -55,10 +75,8 @@ class GalaPacMan:
         self.nuevo_power_up_cerezas = 0
         self.nuevo_power_up_fresas = 0
 
-        self.tiempo_entre_fresitas = 3000
-        self.tiempo_entre_cereza = 3000
-
-
+        self.tiempo_entre_fresitas = 15000
+        self.tiempo_entre_cereza = 9000
 
     def bucle_juego(self):
         clock = pygame.time.Clock()
@@ -69,21 +87,23 @@ class GalaPacMan:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_e:
+                        self.power_up_activado = True
                     if event.key == pygame.K_SPACE:
+                        self.pacman.cambiar_sprite(abierto=True, powerup=self.bool_powerup)  # Cambiar la imagen de pacman cuando dispara
                         tiempo_actual = pygame.time.get_ticks()  # Obtener el tiempo actual en milisegundos
-
-                        self.pacman.cambiar_sprite(abierto=True) # Cambiar la imagen de pacman cuando dispara
-
                         # Comprobar si ha pasado el tiempo suficiente desde el último disparo
                         if tiempo_actual - self.ultimo_disparo >= self.retraso_disparo:
                             self.crear_bala()
                             self.ultimo_disparo = tiempo_actual  # Actualizar el tiempo del último disparo
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_SPACE:
-                        self.pacman.cambiar_sprite(abierto=False) # Cambiar imagen si deja de disparar
+                        self.pacman.cambiar_sprite(abierto=False, powerup=self.bool_powerup) # Cambiar imagen si deja de disparar
+                    if event.key == pygame.K_e:
+                        self.power_up_activado = False
             keys = pygame.key.get_pressed()
-            self.pacman.mover(keys)
-            self.screen.fill(self.color)
+            self.pacman.mover(keys, powerUp=self.bool_powerup)
+            self.screen.blit(self.background, (0, 0))
 
             # Función para actualizar los eventos de la pantalla
             self.actualizar_pantalla()
@@ -122,7 +142,8 @@ class GalaPacMan:
 
         # Actualizar puntuacion y vida de PacMan
         self.punctuation()
-        self.texto_vida_jugador()
+        self.vida_jugador()
+        self.power_up()
 
     def crear_bala(self):
         n_bala = Bala(self)
@@ -137,7 +158,7 @@ class GalaPacMan:
 
     def power_up_fresa(self):
         tiempo_actual = pygame.time.get_ticks()
-        if tiempo_actual - self.nuevo_power_up_cerezas >= self.tiempo_entre_fresitas:
+        if tiempo_actual - self.nuevo_power_up_fresas >= self.tiempo_entre_fresitas:
             n_fresita = Fresita(self)
             self.power_ups_fresas.add(n_fresita)
             self.nuevo_power_up_fresas = tiempo_actual
@@ -150,43 +171,61 @@ class GalaPacMan:
             self.nuevo_power_up_cerezas = tiempo_actual
 
     def colision_bala(self):
-        # La vida del fantasma es 1
-        # colision = pygame.sprite.groupcollide(self.balas, self.fantasmas, True, True)
-        # if len(colision) != 0:
-        # self.punctuationJugador += 10
-
-        # La vida del fantasma es 3
         colision = pygame.sprite.groupcollide(self.balas, self.fantasmas, True, False)
         for fantasmas in colision.values():
             for fantasma in fantasmas:
                 if fantasma.recibir_danio(self.danio_bala):
-                    self.punctuationJugador += 10
+                    self.puntuacionJugador += 10
 
     def colision_fantasma(self):
         for fantasma in self.fantasmas:
             if fantasma.rect.top >= self.screen.get_height():
                 fantasma.kill()
-                self.hp_pacman -= 1
-        if self.hp_pacman <= 0:
+                self.vida_pacman -= 1
+        if self.vida_pacman <= 0:
             self.texto_game_over()
 
     def punctuation(self):
-        fuente = pygame.font.SysFont('Arial', 15)
-        superficie_texto = fuente.render("Puntuacion: " + str(self.punctuationJugador), True, (255, 255, 255))
+        fuente_pacman = pygame.font.Font(self.ruta_fuente, 30)
+        superficie_texto = fuente_pacman.render(str(self.puntuacionJugador), True, self.color_fuente)
         rect_texto = superficie_texto.get_rect()
-        rect_texto.topleft = (20, 50)
+        rect_texto.topright = (380, 10)
         self.screen.blit(superficie_texto, rect_texto)
 
-    def texto_vida_jugador(self):
-        #fuente = pygame.font.SysFont('Arial', 15)
-        #superficie_texto = fuente.render("Vida: " + str(self.hp_pacman), True, (255, 255, 255))
-        #rect_texto = superficie_texto.get_rect()
-        #rect_texto.topleft = (20, 40)
-        #self.screen.blit(superficie_texto, rect_texto)
-
+    def vida_jugador(self):
         for i in range(5):
-            if(self.hp_pacman >= (i+1)):
-                self.screen.blit(self.corazon_lleno, (5+i*25, 5))
+            if self.vida_pacman >= (i + 1):
+                self.screen.blit(self.corazon_lleno, (25+i*25, 10))
+
+    def power_up(self):
+        tiempo_actual = pygame.time.get_ticks()
+        pacman_group = pygame.sprite.Group(self.pacman )
+        colision_cerezas = pygame.sprite.groupcollide(self.power_ups_cerezas, pacman_group, True, True)
+        colision_fresas = pygame.sprite.groupcollide(self.power_ups_fresas, pacman_group, True, True)
+        if self.energia_pacman > 5:
+            self.energia_pacman = 5
+
+        if len(colision_cerezas) != 0 or len(colision_fresas) != 0:
+            self.energia_pacman += 1
+
+        if self.energia_pacman >= 5:
+            self.energia_pacman = 5
+            if self.power_up_activado and not self.bool_powerup:
+                self.bool_powerup = True
+                self.danio_bala = 2
+                self.contador_tiempo_efecto = tiempo_actual
+                self.power_up_activado = False
+
+        if self.bool_powerup and tiempo_actual - self.contador_tiempo_efecto >= self.duracion_tiempo_powerup:
+            self.energia_pacman = 0
+            self.bool_powerup = False
+            self.danio_bala = 1
+            self.contador_tiempo_efecto = 0
+
+        self.refactorizar_pintar_energia(self.imagenes_energia[self.energia_pacman])
+
+
+
 
     def texto_game_over(self):
         fuente = pygame.font.SysFont('Arial', 30)
@@ -199,7 +238,13 @@ class GalaPacMan:
         pygame.quit()
         sys.exit()
 
+    def refactorizar_pintar_energia(self, archivo):
+        imagen = pygame.transform.scale(archivo, (136, 30))
+        self.screen.blit(imagen, (20, 50))
 
 if __name__ == '__main__':
     a = GalaPacMan()
     a.bucle_juego()
+
+    #self.tiempo_duracion_powerup = 5000
+    #self.tiempo_efecto = 0
