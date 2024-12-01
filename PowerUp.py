@@ -9,7 +9,7 @@ class Cereza(Sprite):
         super().__init__()
         self.screen = juego.screen
 
-        self.image = pygame.image.load("Recursos/ItemPowerUp/Cereza.png")
+        self.image = pygame.image.load("Recursos/SpritesPowerUp/Items/Cereza.png")
         self.rect = self.image.get_rect()
         self.speed = 3
 
@@ -31,7 +31,7 @@ class Fresita(Sprite):
         super().__init__()
         self.screen = juego.screen
 
-        self.image = pygame.image.load("Recursos/ItemPowerUp/Fresita.png")
+        self.image = pygame.image.load("Recursos/SpritesPowerUp/Items/Fresita.png")
         self.rect = self.image.get_rect()
         self.speed = 4
 

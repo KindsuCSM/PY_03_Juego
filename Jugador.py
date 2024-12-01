@@ -8,10 +8,10 @@ class PacMan(Sprite):
         self.screen = game.screen
         self.screen_rect = game.screen.get_rect()
 
-        self.image_cerrado = pygame.image.load('Recursos/Personajes/PacManCerrado.png')
-        self.image_abierto = pygame.image.load('Recursos/Personajes/PacManAbierto.png')
-        self.image_cerrado_rojo = pygame.image.load('Recursos/Personajes/PacManCerradoRojo.png')
-        self.image_abierto_rojo = pygame.image.load('Recursos/Personajes/PacManAbiertoRojo.png')
+        self.image_cerrado = pygame.image.load('Recursos/Personajes/Principal/PacManCerrado.png')
+        self.image_abierto = pygame.image.load('Recursos/Personajes/Principal/PacManAbierto.png')
+        self.image_cerrado_rojo = pygame.image.load('Recursos/Personajes/Principal/PacManCerradoRojo.png')
+        self.image_abierto_rojo = pygame.image.load('Recursos/Personajes/Principal/PacManAbiertoRojo.png')
         self.image = self.image_cerrado
         self.rect = self.image_cerrado.get_rect()
 
