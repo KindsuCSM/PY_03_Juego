@@ -27,9 +27,14 @@ class GalaPacMan:
         self.color_fuente = (250, 250, 153)
         self.fuente_pacman = pygame.font.Font(self.ruta_fuente, 35)
 
+        # Icono app
+        self.icon_path = 'Recursos/Imagenes/Personajes/Enemigos/Fantasmas/Azul.png'
+        self.icon_image = pygame.image.load(self.icon_path)
+
         # Configuración de pantalla
         self.screen = pygame.display.set_mode((self.screenWidth, self.screenHeight))
         pygame.display.set_caption('GalaPacMan')
+        pygame.display.set_icon(self.icon_image)
 
         self.background = pygame.image.load('Recursos/Imagenes/UI/Background/game_background.png')
 
@@ -79,7 +84,7 @@ class GalaPacMan:
         # Configuración de la puntuación
         self.puntuacion_jugador = 0
         self.vida_pacman = 5
-        self.energia_pacman = 5
+        self.energia_pacman = 0
         self.puntuacion_para_lvl_dos = 300
 
         # Importar imagenes de la Vida
