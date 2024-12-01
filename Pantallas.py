@@ -8,11 +8,11 @@ class MenuPrincipal:
         self.screenWidth = self.screen.get_width()
         self.screenHeight = self.screen.get_height()
 
-        self.background_img = pygame.image.load('Recursos/Menu/menu_background.png')
-        self.btn_start = pygame.image.load('Recursos/Menu/BotonesPrincipal/menu_start.png')
-        self.btn_exit = pygame.image.load('Recursos/Menu/BotonesPrincipal/menu__exit.png')
-        self.btn_nivel_uno = pygame.image.load('Recursos/Menu/BotonesPrincipal/menu_lvl1.png')
-        self.btn_nivel_dos = pygame.image.load('Recursos/Menu/BotonesPrincipal/menu_lvl2.png')
+        self.background_img = pygame.image.load('Recursos/Imagenes/Menu/menu_background.png')
+        self.btn_start = pygame.image.load('Recursos/Imagenes/Menu/BotonesPrincipal/menu_start.png')
+        self.btn_exit = pygame.image.load('Recursos/Imagenes/Menu/BotonesPrincipal/menu__exit.png')
+        self.btn_nivel_uno = pygame.image.load('Recursos/Imagenes/Menu/BotonesPrincipal/menu_lvl1.png')
+        self.btn_nivel_dos = pygame.image.load('Recursos/Imagenes/Menu/BotonesPrincipal/menu_lvl2.png')
 
         self.btn_start_rect = self.btn_start.get_rect(center=(self.screenWidth / 2, self.screenHeight / 2))
         self.btn_nivel_uno_rect = self.btn_nivel_uno.get_rect(center=(self.screenWidth / 2, self.screenHeight / 2 + 60))
@@ -32,12 +32,12 @@ class GameOver:
         self.screen = juego.screen
         self.screenWidth = self.screen.get_width()
         self.screenHeight = self.screen.get_height()
-        self.background_img = pygame.image.load('Recursos/Menu/menu_background.png')
+        self.background_img = pygame.image.load('Recursos/Imagenes/Menu/menu_background.png')
 
-        self.ruta_fuente = "Recursos/UI/Fuentes/retro.ttf"
+        self.ruta_fuente = "Recursos/Imagenes/UI/Fuentes/retro.ttf"
 
         self.fuente_game_over = pygame.font.Font(self.ruta_fuente, 60)
-        self.btn_retry = pygame.image.load('Recursos/Menu/BotonesGameOver/gameOver_retry.png')
+        self.btn_retry = pygame.image.load('Recursos/Imagenes/Menu/BotonesGameOver/gameOver_retry.png')
         self.btn_retry_rect = self.btn_retry.get_rect(center=(self.screenWidth / 2, self.screenHeight / 2 + 200))
         self.superficie_texto = self.fuente_game_over.render("Game Over", True, (255, 255, 155))
         self.rect_texto = self.superficie_texto.get_rect()

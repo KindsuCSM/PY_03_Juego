@@ -10,6 +10,8 @@ class Fantasma(Sprite):
         super().__init__()
         self.screen = juego.screen
 
+        self.enemigo_debil = pygame.image.load('Recursos/Imagenes/Personajes/Enemigos/Fantasmas/ErMaloMalisimo.png')
+
         self.image = self.personaje_aleatorio()
         self.rect = self.image.get_rect()
         self.speed = 2
@@ -32,15 +34,18 @@ class Fantasma(Sprite):
             return True
         return False
 
-    def draw_fantasma(self):
-        self.screen.blit(self.image, self.rect)
+    def draw_fantasma(self, isPowerUpActivado=False):
+        if not isPowerUpActivado:
+            self.screen.blit(self.image, self.rect)
+        else:
+            self.screen.blit(self.enemigo_debil, self.rect)
 
     def personaje_aleatorio(self):
         enemy_images = [
-            pygame.image.load("Recursos/Personajes/Enemigos/Fantasmas/Azul.png"),
-            pygame.image.load("Recursos/Personajes/Enemigos/Fantasmas/Naranja.png"),
-            pygame.image.load("Recursos/Personajes/Enemigos/Fantasmas/Rojo.png"),
-            pygame.image.load("Recursos/Personajes/Enemigos/Fantasmas/Rosa.png"),
+            pygame.image.load("Recursos/Imagenes/Personajes/Enemigos/Fantasmas/Azul.png"),
+            pygame.image.load("Recursos/Imagenes/Personajes/Enemigos/Fantasmas/Naranja.png"),
+            pygame.image.load("Recursos/Imagenes/Personajes/Enemigos/Fantasmas/Rojo.png"),
+            pygame.image.load("Recursos/Imagenes/Personajes/Enemigos/Fantasmas/Rosa.png"),
         ]
         return random.choice(enemy_images)
 
@@ -75,8 +80,8 @@ class Asteroide(Sprite):
 
     def asteroide_aleatorio(self):
         asteroides_img = [
-            pygame.image.load("Recursos/Personajes/Enemigos/Asteroides/Asteroide_corto.png"),
-            pygame.image.load("Recursos/Personajes/Enemigos/Asteroides/Asteroide_largo.png")
+            pygame.image.load("Recursos/Imagenes/Personajes/Enemigos/Asteroides/Asteroide_corto.png"),
+            pygame.image.load("Recursos/Imagenes/Personajes/Enemigos/Asteroides/Asteroide_largo.png")
         ]
 
         return random.choice(asteroides_img)
