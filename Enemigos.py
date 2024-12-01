@@ -3,21 +3,14 @@ import random
 import sys
 from pygame._sprite import Sprite
 
-def personaje_aleatorio():
-    enemy_images = [
-        pygame.image.load("Recursos/Personajes/Azul.png"),
-        pygame.image.load("Recursos/Personajes/Naranja.png"),
-        pygame.image.load("Recursos/Personajes/Rojo.png"),
-        pygame.image.load("Recursos/Personajes/Rosa.png"),
-    ]
-    return random.choice(enemy_images)
+
 
 class Fantasma(Sprite):
     def __init__(self, juego):
         super().__init__()
         self.screen = juego.screen
 
-        self.image = personaje_aleatorio()
+        self.image = self.personaje_aleatorio()
         self.rect = self.image.get_rect()
         self.speed = 2
         self.salud = 3
@@ -41,3 +34,12 @@ class Fantasma(Sprite):
 
     def draw_fantasma(self):
         self.screen.blit(self.image, self.rect)
+
+    def personaje_aleatorio(self):
+        enemy_images = [
+            pygame.image.load("Recursos/Personajes/Azul.png"),
+            pygame.image.load("Recursos/Personajes/Naranja.png"),
+            pygame.image.load("Recursos/Personajes/Rojo.png"),
+            pygame.image.load("Recursos/Personajes/Rosa.png"),
+        ]
+        return random.choice(enemy_images)
